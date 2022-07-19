@@ -1,6 +1,7 @@
 /*
   //******************************************************************************************
-  Copyright (c) <18/07/2022> <Gleisson Almeida.>
+  Basedo no codigo :https://github.com/gordonthree/multiswitch
+  Copyright (c) <18/07/2022> <>
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -85,6 +86,10 @@ void printfiles() {
 
 int downloadFile(String fileurl) { // upload new file to fs by downloading from a remote server, rather than reflash the entire spiffs
   int ret = false;
+  int StepProgress = 0;
+  int Step = 0;
+  int beforeStep = 0;
+  String aux;
 
   HTTPClient http;
   WiFiClientSecure client;
@@ -123,8 +128,14 @@ int downloadFile(String fileurl) { // upload new file to fs by downloading from 
       }
       Serial.println("File open, write start.");
       // read all data from server
+
+      Step = paysize / 10;
       while (http.connected() && (len > 0 || len == -1)) {
-        // get available data size
+        StepProgress = (100 - ((len / Step)*10));
+        if (beforeStep != StepProgress) {
+          beforeStep = StepProgress;
+          Serial.println("Progres:" + String(StepProgress) + "%");
+        }
         size_t size = stream->available();
         if (size) {
           // read up to 128 byte
@@ -186,3 +197,4 @@ void loop() {
   digitalWrite(LED, ledState);
   lastButtonState = reading;
 }
+
